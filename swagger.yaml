@@ -67,6 +67,7 @@ paths:
       description: API for fetching a user profile
       parameters:
         - in: header
+          type: string
           name: Authorization
           description: Attach Bearer JWT token
           required: true
@@ -90,6 +91,7 @@ paths:
       description: API for updating a user profile
       parameters:
         - in: header
+          type: string
           name: Authorization
           description: Attach Bearer JWT token
           required: true
@@ -121,11 +123,12 @@ paths:
       description: API for Get all transactions grouped by account
       parameters:
         - in: header
+          type: string
           name: Authorization
           description: Attach Bearer JWT token
           required: true
         - name: accountId
-          in: query
+          in: path
           type: string
           required: true
       produces:
@@ -150,15 +153,20 @@ paths:
         - Bearer: []
       tags:
         - Transactions Module
-      summary: Get all transactions grouped by account
-      description: API for Get all transactions grouped by account
+      summary: Get transactions details by transactionId
+      description: API for Get transactions details by transactionId
       parameters:
         - in: header
           name: Authorization
+          type: string
           description: Attach Bearer JWT token
           required: true
         - name: accountId
-          in: query
+          in: path
+          type: string
+          required: true
+        - name: transactionId
+          in: path
           type: string
           required: true
       produces:
@@ -167,47 +175,13 @@ paths:
         '200':
           description: Transactions retrieved successully
           schema:
-            type: array
-            items:
-              $ref: '#/definitions/TransactionDetails'
+            $ref: '#/definitions/TransactionDetailsInput'
         '400':
           description: Invalid Fields
         '404':
           description: Account not found
         '500':
           description: Internal Server Error
-
-     get:
-      security:
-        - Bearer: []
-      tags:
-        - Transactions Module
-      summary: Get all infos from a transaction
-      description: API for Get all infos from a transaction
-      parameters:
-        - in: header
-          name: Authorization
-          description: Attach Bearer JWT token
-          required: true
-        - name: accountId
-          in: query
-          type: string
-          required: true
-      produces:
-        - application/json
-      responses:
-        '200':
-          description: Transactions retrieved successully
-          schema:
-            type: array
-            items:
-              $ref: '#/definitions/TransactionDetailsInput'
-        '400':
-          description: Invalid Fields
-        '404':
-          description: Account not found
-        '500':
-          description: Internal Server Error       
 
     put:
       security:
@@ -219,31 +193,36 @@ paths:
       parameters:
         - in: header
           name: Authorization
+          type: string
           description: Attach Bearer JWT token
           required: true
         - name: transactionId
           in: path
-          description: transactionId that needs to be updated
+          type: string
           required: true
-          schema:
-            type: number
-        - name: category
+        - name: accountId
+          in: path
+          type: string
+          required: true
+        - name: body
           in: body
-          description: Category of transaction
+          description: Payload for updating transaction
           schema:
-            type: string
-        - name: notes
-          in: body
-          description: Notes of transaction
-          schema:
-            type: string
+            type: object
+            properties:
+              category:
+                type: string
+              notes:
+                type: string
       produces:
         - application/json
       responses:
         '200':
           description: Transaction details retrieved successully
           schema:
-            $ref: '#/definitions/TransactionDetailsInput'
+            properties:
+              message:
+                type: string
         '400':
           description: Invalid Fields
         '500':
@@ -327,7 +306,7 @@ definitions:
         type: string
       balance:
         type: number
-        
+
   TransactionDetailsInput:
     type: object
     properties:
