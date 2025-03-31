@@ -111,33 +111,6 @@ paths:
         '500':
           description: Internal Server Error
 
-  /accounts:
-    get:
-      security:
-        - Bearer: []
-      tags:
-        - Accounts Module
-      summary: Get all accounts by user
-      description: API for Get all accounts by user
-      parameters:
-        - in: header
-          name: Authorization
-          description: Attach Bearer JWT token
-          required: true
-      produces:
-        - application/json
-      responses:
-        '200':
-          description: Accounts retrieved successully
-          schema:
-            type: array
-            items:
-              $ref: '#/definitions/Accounts'
-        '400':
-          description: Invalid Fields
-        '500':
-          description: Internal Server Error
-
   /accounts/{accountId}/transactions:
     get:
       security:
@@ -172,11 +145,75 @@ paths:
           description: Internal Server Error
 
   /accounts/{accountId}/transactions/{transactionId}:
+    get:
+      security:
+        - Bearer: []
+      tags:
+        - Transactions Module
+      summary: Get all transactions grouped by account
+      description: API for Get all transactions grouped by account
+      parameters:
+        - in: header
+          name: Authorization
+          description: Attach Bearer JWT token
+          required: true
+        - name: accountId
+          in: query
+          type: string
+          required: true
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Transactions retrieved successully
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/TransactionDetails'
+        '400':
+          description: Invalid Fields
+        '404':
+          description: Account not found
+        '500':
+          description: Internal Server Error
+
+     get:
+      security:
+        - Bearer: []
+      tags:
+        - Transactions Module
+      summary: Get all infos from a transaction
+      description: API for Get all infos from a transaction
+      parameters:
+        - in: header
+          name: Authorization
+          description: Attach Bearer JWT token
+          required: true
+        - name: accountId
+          in: query
+          type: string
+          required: true
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Transactions retrieved successully
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/TransactionDetailsInput'
+        '400':
+          description: Invalid Fields
+        '404':
+          description: Account not found
+        '500':
+          description: Internal Server Error       
+
     put:
       security:
         - Bearer: []
       tags:
-        - Transaction details Module
+        - Transactions Module
       summary: Update transaction details API
       description: API for updating a transaction details
       parameters:
@@ -191,12 +228,12 @@ paths:
           schema:
             type: number
         - name: category
-          in: query
+          in: body
           description: Category of transaction
           schema:
             type: string
         - name: notes
-          in: query
+          in: body
           description: Notes of transaction
           schema:
             type: string
@@ -206,7 +243,7 @@ paths:
         '200':
           description: Transaction details retrieved successully
           schema:
-            $ref: '#/definitions/TransactionDetails'
+            $ref: '#/definitions/TransactionDetailsInput'
         '400':
           description: Invalid Fields
         '500':
@@ -278,6 +315,20 @@ definitions:
         type: number
 
   TransactionDetails:
+    type: object
+    properties:
+      transactionId:
+        type: number
+      dateTransaction:
+        type: string
+      amount:
+        type: number
+      description:
+        type: string
+      balance:
+        type: number
+        
+  TransactionDetailsInput:
     type: object
     properties:
       transactionId:
